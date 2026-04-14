@@ -28,38 +28,39 @@ import java.util.Queue;
 import java.util.Stack;
 
 /**
- * TODO comments
+ * This class represents the board of the Tak game.
+ * This class includes some utility methods to compute neighbors positions, check if a piece can be put, and move of a {@link Piece}.
  *
  * @author Belegkarnil
  */
 public class Board{
 	public static enum Size{
-		/** TODO comments */
+		/** Define a size of a tiny board according to the official rules */
 		TINY(3),
-		/** TODO comments */
+		/** Define a size of a small board according to the official rules */
 		SMALL(4),
-		/** TODO comments */
+		/** Define a size of a medium board according to the official rules */
 		MEDIUM(5),
-		/** TODO comments */
+		/** Define a size of a large board according to the official rules */
 		LARGE(6),
-		/** TODO comments */
+		/** Define a size of a huge board according to the official rules */
 		HUGE(8);
 		private Size(final int size){
 			this.length = size;
 		}
-		/** TODO comments */
+		/** Is the board size */
 		public final int length;
 
 		/**
-		 * TODO
-		 * @return
+		 * Count the initial capstones (depending on the board size) that a player has when the game starts
+		 * @return the number of capstones (see {@link Piece})
 		 */
 		public int countInitialCapstones(){
 			return countInitialCapstones(this.length);
 		}
 		/**
-		 * TODO
-		 * @return
+		 * Count the initial stones (depending on the board size) that a player has when the game starts
+		 * @return the number of stones (see {@link Piece})
 		 */
 		public int countInitialStones(){
 			return countInitialStones(this.length);
@@ -80,7 +81,7 @@ public class Board{
 
 	}
 
-	/** TODO */
+	/** Define an amount used to express that is invalid (i.e. 0) */
 	public static final int INVALID_AMOUNT = 0;
 
 	private Stack<Piece>[][] board;
@@ -214,9 +215,9 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param piece
-	 * @param point
+	 * Place a {@link Piece} on the board at a given position
+	 * @param piece the {@link Piece} to place
+	 * @param point the board position to place the piece
 	 * @return Color of the player (see {@link Constants}) that completed a path, null otherwise
 	 */
 	protected Color place(Piece piece, Point point){
@@ -229,9 +230,9 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param cell
-	 * @return
+	 * Get neighbors positions of a cell in the board
+	 * @param cell A position on the board
+	 * @return The list of existing (i.e. inBounds(.)) positions
 	 */
 	public List<Point> getNeighbors(Point cell){
 		List<Point> neighbors = new LinkedList<Point>();
@@ -255,10 +256,10 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param point
-	 * @param color
-	 * @return
+	 * Know if a path exists to link left to right or top to down
+	 * @param point A point on the path (i.e. new {@link Piece} or {@link Piece} moved)
+	 * @param color The color of the {@link Player} that attempted to create a path
+	 * @return true iff a path exists from point with the given color, false otherwise
 	 */
 	public boolean pathExists(Point point, Color color){
 		boolean linkToTop		= false;
@@ -292,32 +293,32 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param row
-	 * @param column
-	 * @param color
-	 * @return
+	 * Know if a path exists to link left to right or top to down
+	 * @param row is the y coordinate of a point on the path (i.e. new {@link Piece} or {@link Piece} moved)
+	 * @param column is the x coordinate of a point on the path (i.e. new {@link Piece} or {@link Piece} moved)
+	 * @param color The color of the {@link Player} that attempted to create a path
+	 * @return true iff a path exists from point with the given color, false otherwise
 	 */
 	public boolean pathExists(int row, int column, Color color){
 		return pathExists(new Point(column,row),color);
 	}
 
 	/**
-	 * TODO
-	 * @param player
-	 * @param src
-	 * @param amount
-	 * @param dst
-	 * @return
+	 * Know if a player can make the given move
+	 * @param player The {@link Player}'s {@link Color} (see {@link Constants})
+	 * @param src The initial position of the path
+	 * @param amount The amount of {@link Piece}s taken from initial position and placed along the path
+	 * @param dst The final position of the path
+	 * @return true iff the move is valid, false otherwise
 	 */
 	public boolean canMove(Color player,Point src, int[] amount, Point dst){
 		return canMove(player,src.y,src.x,amount,dst.y,dst.x);
 	}
 
 	/**
-	 * TODO
-	 * @param amount
-	 * @return
+	 * Compute total amount of a move action (path)
+	 * @param amount The amount array of a move action
+	 * @return total amount iff move seems valid (i.e. each amount > 0 and amount.length > 0), false otherwise
 	 */
 	protected static final int computeAmount(int[] amount){
 		if(amount.length < 1) return INVALID_AMOUNT;
@@ -329,15 +330,15 @@ public class Board{
 		return sum;
 	}
 
-	/** TODO
-	 *
-	 * @param player
-	 * @param srcRow
-	 * @param srcColumn
-	 * @param amount
-	 * @param dstRow
-	 * @param dstColumn
-	 * @return
+	/**
+	 * Know if a player can make the given move
+	 * @param player The {@link Player}'s {@link Color} (see {@link Constants})
+	 * @param srcRow is the y coordinate of the initial position of the path
+	 * @param srcColumn is the x coordinate of the initial position of the path
+	 * @param amount The amount of {@link Piece}s taken from initial position and placed along the path
+	 * @param dstRow is the y coordinate of the final position of the path
+	 * @param dstColumn is the x coordinate of the final position of the path
+	 * @return true iff the move is valid, false otherwise
 	 */
 	public boolean canMove(Color player,int srcRow, int srcColumn, int amount[], int dstRow, int dstColumn){
 		if(!inBounds(srcRow, srcColumn) || !inBounds(dstRow, dstColumn)) return false;
@@ -380,33 +381,33 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param srcRow
-	 * @param srcColumn
-	 * @param dstRow
-	 * @param dstColumn
-	 * @return
+	 * Know if exists a straight path (horizontal or vertical) between two positions
+	 * @param srcRow is the y coordinate of the initial position of the path
+	 * @param srcColumn is the x coordinate of the initial position of the path
+	 * @param dstRow is the y coordinate of the final position of the path
+	 * @param dstColumn is the x coordinate of the final position of the path
+	 * @return true iff the path is going straight, false otherwise
 	 */
 	public static boolean isStraightPath(int srcRow, int srcColumn, int dstRow, int dstColumn){
 		return srcRow == dstRow || srcColumn == dstColumn;
 	}
 
 	/**
-	 * TODO
-	 * @param src
-	 * @param dst
-	 * @return
+	 * Know if exists a straight path (horizontal or vertical) between two positions
+	 * @param src The initial position of the path
+	 * @param dst The final position of the path
+	 * @return true iff the path is going straight, false otherwise
 	 */
 	public static boolean isStraightPath(Point src, Point dst){
 		return isStraightPath(src.y,src.x,dst.y,dst.x);
 	}
 
 	/**
-	 * TODO
-	 * @param src
-	 * @param amount
-	 * @param dst
-	 * @return
+	 * Move some {@link Piece}s on the board according to the given path
+	 * @param src The initial position of the path
+	 * @param amount The amount of {@link Piece}s taken from initial position and placed along the path
+	 * @param dst The final position of the path
+	 * @return Color of the player (see {@link Constants}) that completed a path, null otherwise
 	 */
 	protected Color move(Point src, int[] amount, Point dst){
 		final int deltaX = src.y == dst.y ? ((dst.x - src.x) < 0 ? -1 : 1) : 0;
@@ -469,9 +470,9 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @param piece
-	 * @return
+	 * Count how much times a type of {@link Piece} (color and type) is on the board
+	 * @param piece A {@link Piece} (color and type) that defines the type
+	 * @return the counter
 	 */
 	public int countPieces(Piece piece){
 		int counter = 0;
@@ -524,15 +525,15 @@ public class Board{
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Count the initial capstones (depending on the board size) that a player has when the game starts
+	 * @return the number of capstones (see {@link Piece})
 	 */
 	public int countInitialCapstones(){
 		return Size.countInitialCapstones(getSize());
 	}
 	/**
-	 * TODO
-	 * @return
+	 * Count the initial stones (depending on the board size) that a player has when the game starts
+	 * @return the number of stones (see {@link Piece})
 	 */
 	public int countInitialStones(){
 		return Size.countInitialStones(getSize());

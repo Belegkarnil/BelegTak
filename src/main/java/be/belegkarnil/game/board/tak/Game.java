@@ -38,6 +38,27 @@ import java.util.concurrent.TimeoutException;
  */
 public class Game implements Runnable{
 	/**
+	 * Is an enumeration that express all the winning reasons
+	 */
+	public static enum WinningReason{
+		/**
+		 * Occurs when a player has skip too much times (or bad {@link Action})
+		 */
+		SKIP_LIMIT,
+		/**
+		 * Occurs when a player completed a path (bottom-up, left-right)
+		 */
+		PATH_COMPLETED,
+		/**
+		 * Occurs when players need a tie, more dolmens (see {@link Piece}) imply win.
+		 */
+		DOLMEN_TIE,
+		/**
+		 * Occurs when players need a tie and they have same number of dolmens. Second player always wins.
+		 */
+		TIE_SECOND_PLAYER
+	};
+	/**
 	 * is the maximum of allowed skip before considering to stop the game
 	 */
 	public static final int DEFAULT_SKIP_LIMIT = 3;
@@ -289,7 +310,6 @@ public class Game implements Runnable{
 		}
 		return false;
 	}
-
 	/**
 	 * Execute the game mechanic of a single round: handle events, turns, scoring, and players
 	 */
@@ -302,6 +322,7 @@ public class Game implements Runnable{
 		players[1].setColor(Constants.SECOND_PLAYER);
 		fireRoundBegins(new RoundEvent(this, players[0], this.players[1], round));
 		Player winner = null;
+		WinningReason reason = null;
 		this.turn = 0;
 		int prevScoreP1, prevScoreP2;
 		do{
@@ -311,22 +332,30 @@ public class Game implements Runnable{
 			executeTurn();
 			if(players[0].countSkip() >= skipLimit){
 				winner = players[1];
+				reason = WinningReason.SKIP_LIMIT;
 			}else if(players[1].countSkip() >= skipLimit){
 				winner = players[0];
+				reason = WinningReason.SKIP_LIMIT;
 			}else if(players[0].getScore() > prevScoreP1){
 				winner = players[0];
+				reason = WinningReason.PATH_COMPLETED;
 			}else if(players[1].getScore() > prevScoreP2){
 				winner = players[1];
+				reason = WinningReason.PATH_COMPLETED;
 			}else if(board.isCompleted() || players[0].countPieces()<1 || players[1].countPieces()<1 || !canPlay(board, players[0]) || !canPlay(board, players[1])){
 				final int dolmenBlack = board.countPieces(Piece.DOLMEN_BLACK);
 				final int dolmenWhite = board.countPieces(Piece.DOLMEN_WHITE);
+				reason = WinningReason.DOLMEN_TIE;
 				if(dolmenBlack > dolmenWhite) winner = players[0].getColor() == Constants.BLACK_PLAYER ? players[0] : players[1];
 				else if(dolmenBlack < dolmenWhite) winner = players[0].getColor() == Constants.WHITE_PLAYER ? players[0] : players[1];
-				else winner = players[1]; // tie, always second player because he does not start (disaventage)
+				else{
+					winner = players[1]; // tie, always second player because he does not start (disaventage)
+					reason = WinningReason.TIE_SECOND_PLAYER;
+				}
 			}
 		}while(winner == null);
 		winner.win();
-		fireRoundEnds(new RoundEvent(this, players[0], this.players[1], round, winner));
+		fireRoundEnds(new RoundEvent(this, players[0], this.players[1], round, winner, reason));
 		round++;
 		Player swap = players[0];
 		players[0] = players[1];

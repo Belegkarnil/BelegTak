@@ -112,6 +112,7 @@ public class LogPanel extends InnerPanel implements ActionListener, GameListener
 			content.append("\nWinner is " + re.winner.getName() + "\n");
 			content.append("Player1 score is " + re.startPlayer.getScore() + "\n");
 			content.append("Player2 score is " + re.opponent.getScore() + "\n");
+			if(re.reason != null) content.append("Reason is " + re.reason + "\n");
 		}else{
 			content.append("\nNo winner\n");
 		}

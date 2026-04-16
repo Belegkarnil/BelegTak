@@ -31,6 +31,10 @@ import java.util.EventObject;
  */
 public class RoundEvent extends EventObject{
 	/**
+	 * is a static constant with null value meaning that there are not yet a reason
+	 */
+	public static final Game.WinningReason NO_REASON = null;
+	/**
 	 * is the first {link @Player} when the round will start
 	 */
 	public final Player startPlayer;
@@ -42,6 +46,10 @@ public class RoundEvent extends EventObject{
 	 * is the {link @Player} who win the current round during the {@link Game} or {@link GameEvent#NO_WINNER}
 	 */
 	public final Player winner;
+	/**
+	 * Defined only if winner is defined, this is the reason why the winner wins
+	 */
+	public final Game.WinningReason reason;
 	/**
 	 * is the identifier (counter) of the related round.
 	 */
@@ -61,7 +69,7 @@ public class RoundEvent extends EventObject{
 	 * @throws IllegalArgumentException if source is null
 	 */
 	public RoundEvent(final Game game, final Player startPlayer, final Player opponent, final int round){
-		this(game, startPlayer, opponent, round, GameEvent.NO_WINNER);
+		this(game, startPlayer, opponent, round, GameEvent.NO_WINNER, NO_REASON);
 	}
 
 	/**
@@ -72,14 +80,16 @@ public class RoundEvent extends EventObject{
 	 * @param opponent    is the second/other/opponent player to play when the round will start
 	 * @param round       is the round identifier related to the event
 	 * @param winner      is the player (first/second) who win the {@link Game} or {@link GameEvent#NO_WINNER}
+	 * @param reason      is reason why the player wins
 	 * @throws IllegalArgumentException if source is null
 	 */
-	public RoundEvent(final Game game, final Player startPlayer, final Player opponent, final int round, final Player winner){
+	public RoundEvent(final Game game, final Player startPlayer, final Player opponent, final int round, final Player winner, final Game.WinningReason reason){
 		super(game);
 		this.startPlayer = startPlayer;
 		this.opponent = opponent;
 		this.round = round;
 		this.winner = winner;
+		this.reason = reason;
 		this.game = game;
 	}
 }

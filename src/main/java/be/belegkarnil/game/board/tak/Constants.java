@@ -22,7 +22,7 @@ package be.belegkarnil.game.board.tak;
 import java.awt.Color;
 
 /**
- * TODO comments
+ * Game constants (colors)
  *
  * @author Belegkarnil
  */

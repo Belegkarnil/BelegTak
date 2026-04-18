@@ -300,7 +300,11 @@ public class Board implements Cloneable{
 			else if(current.y == last) linkToBottom = true;
 
 			for(Point neighbor: getNeighbors(current)){
-				if(!visited[neighbor.y][neighbor.x] && !board[neighbor.y][neighbor.x].isEmpty() && board[neighbor.y][neighbor.x].peek().color == color){
+				if(	!visited[neighbor.y][neighbor.x]
+						  && !board[neighbor.y][neighbor.x].isEmpty()
+						  && !board[neighbor.y][neighbor.x].peek().isMenhir()
+						  && board[neighbor.y][neighbor.x].peek().color == color
+				){
 					frontier.add(neighbor);
 					visited[neighbor.y][neighbor.x] = true;
 				}
@@ -393,7 +397,7 @@ public class Board implements Cloneable{
 			while(moves>1){
 				i +=sign;
 				moves--;
-				if(!board[srcRow + i][srcColumn].empty() && !board[srcRow][srcColumn + i].peek().isDolmen()) return false;
+				if(!board[srcRow + i][srcColumn].empty() && !board[srcRow + i][srcColumn].peek().isDolmen()) return false;
 			}
 			if(board[dstRow][dstColumn].empty()) return true;
 			final Piece top = board[dstRow][dstColumn].peek();

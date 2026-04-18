@@ -54,7 +54,11 @@ public class BelegTak{
 		java.util.List<File> dirs = new ArrayList<File>();
 		while(resources.hasMoreElements()){
 			URL resource = resources.nextElement();
-			dirs.add(new File(resource.getFile()));
+			final String path = resource.getFile();
+			dirs.add(new File(path));
+			if(path.contains("%20")){// Compatibilty for Java impl, that URI Encode
+				dirs.add(new File(path.replace("%20"," ")));
+			}
 		}
 		ArrayList<Class> classes = new ArrayList<Class>();
 		for(File directory : dirs){

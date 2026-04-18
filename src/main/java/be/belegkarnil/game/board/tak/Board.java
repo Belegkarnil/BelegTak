@@ -279,6 +279,7 @@ public class Board implements Cloneable{
 	 * @return true iff a path exists from point with the given color, false otherwise
 	 */
 	public boolean pathExists(Point point, Color color){
+		if(getTop(point) != null && !getTop(point).color.equals(color)) return false;
 		boolean linkToTop		= false;
 		boolean linkToBottom	= false;
 		boolean linkToLeft	= false;
@@ -300,13 +301,15 @@ public class Board implements Cloneable{
 			else if(current.y == last) linkToBottom = true;
 
 			for(Point neighbor: getNeighbors(current)){
-				if(	!visited[neighbor.y][neighbor.x]
-						  && !board[neighbor.y][neighbor.x].isEmpty()
-						  && !board[neighbor.y][neighbor.x].peek().isMenhir()
-						  && board[neighbor.y][neighbor.x].peek().color == color
-				){
-					frontier.add(neighbor);
-					visited[neighbor.y][neighbor.x] = true;
+				if(!visited[neighbor.y][neighbor.x]){
+					final Piece neighborPiece = getTop(neighbor);
+					if(	neighborPiece != null
+							  && !neighborPiece.isMenhir()
+							  && neighborPiece.color.equals(color)
+					){
+						frontier.add(neighbor);
+						visited[neighbor.y][neighbor.x] = true;
+					}
 				}
 			}
 		}

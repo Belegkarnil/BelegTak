@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -238,8 +237,10 @@ public class Board implements Cloneable{
 	 * @return Color of the player (see {@link Constants}) that completed a path, null otherwise
 	 */
 	protected Color place(Piece piece, Point point){
+		if(this.board[point.y][point.x].isEmpty()){
+			this.empty--;
+		}
 		this.board[point.y][point.x].push(piece);
-		this.empty--;
 		if(pathExists(point, piece.color)) return piece.color;
 		final Color opponent = Constants.BLACK_PLAYER == piece.color ? Constants.WHITE_PLAYER : Constants.BLACK_PLAYER;
 		if(pathExists(point, opponent)) return opponent;
@@ -279,7 +280,6 @@ public class Board implements Cloneable{
 	 * @return true iff a path exists from point with the given color, false otherwise
 	 */
 	public boolean pathExists(Point point, Color color){
-		if(getTop(point) != null && !getTop(point).color.equals(color)) return false;
 		boolean linkToTop		= false;
 		boolean linkToBottom	= false;
 		boolean linkToLeft	= false;
@@ -295,22 +295,18 @@ public class Board implements Cloneable{
 		frontier.add(point);
 		while(!frontier.isEmpty()){
 			Point current = frontier.poll();
-			if(current.x == 0) linkToLeft = true;
-			else if(current.x == last) linkToRight = true;
-			if(current.y == 0) linkToTop = true;
-			else if(current.y == last) linkToBottom = true;
+			Piece top = getTop(current);
 
-			for(Point neighbor: getNeighbors(current)){
-				if(!visited[neighbor.y][neighbor.x]){
-					final Piece neighborPiece = getTop(neighbor);
-					if(	neighborPiece != null
-							  && !neighborPiece.isMenhir()
-							  && neighborPiece.color.equals(color)
-					){
-						frontier.add(neighbor);
-						visited[neighbor.y][neighbor.x] = true;
-					}
+			if(!visited[current.y][current.x] && top != null && top.color.equals(color) && !top.isMenhir()){
+				if(current.x == 0) linkToLeft = true;
+				else if(current.x == last) linkToRight = true;
+				if(current.y == 0) linkToTop = true;
+				else if(current.y == last) linkToBottom = true;
+
+				for(Point neighbor : getNeighbors(current)){
+					frontier.add(neighbor);
 				}
+				visited[current.y][current.x] = true;
 			}
 		}
 		return (linkToTop && linkToBottom) || (linkToLeft && linkToRight);
@@ -501,11 +497,11 @@ public class Board implements Cloneable{
 	}
 
 	/**
-	 * Count how much times a type of {@link Piece} (color and type) is on the board
+	 * Count how much times a type of {@link Piece} (color and type) is on (the top of) the board
 	 * @param piece A {@link Piece} (color and type) that defines the type
 	 * @return the counter
 	 */
-	public int countPieces(Piece piece){
+	public int countTopPieces(Piece piece){
 		int counter = 0;
 		for(int row = 0; row < this.board.length; row++){
 			for(int col = 0; col < this.board.length; col++){

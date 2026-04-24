@@ -267,11 +267,13 @@ public class Game implements Runnable{
 					fireInvalidAction(new MisdesignEvent(current, board, tmp, pos));
 				}
 			}
-		}else if(canPlay(board, current)){ // player can play but does not
-			current.skip();
-			penality = true;
-		}else{
-			current.skip();
+		}else if(readAction){// action is null || action.isSkip()
+			if(canPlay(board, current)){ // player can play but does not
+				current.skip();
+				penality = true;
+			}else{
+				current.skip();
+			}
 		}
 
 		if(penality){
@@ -343,8 +345,8 @@ public class Game implements Runnable{
 				winner = players[1];
 				reason = WinningReason.PATH_COMPLETED;
 			}else if(board.isCompleted() || players[0].countPieces()<1 || players[1].countPieces()<1 || !canPlay(board, players[0]) || !canPlay(board, players[1])){
-				final int dolmenBlack = board.countPieces(Piece.DOLMEN_BLACK);
-				final int dolmenWhite = board.countPieces(Piece.DOLMEN_WHITE);
+				final int dolmenBlack = board.countTopPieces(Piece.DOLMEN_BLACK);
+				final int dolmenWhite = board.countTopPieces(Piece.DOLMEN_WHITE);
 				reason = WinningReason.DOLMEN_TIE;
 				if(dolmenBlack > dolmenWhite) winner = players[0].getColor() == Constants.BLACK_PLAYER ? players[0] : players[1];
 				else if(dolmenBlack < dolmenWhite) winner = players[0].getColor() == Constants.WHITE_PLAYER ? players[0] : players[1];
